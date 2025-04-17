@@ -1,10 +1,9 @@
-from typing import Any
 from zoneinfo import ZoneInfo
 
 from pydantic import BaseModel, Field
 from datetime import datetime
 
-from fastapi_template.sample.model.sample_request import SampleRequest
+from fastapi_template.api.sample.model.sample_request import SampleRequest
 
 
 class SampleResponse(BaseModel):
