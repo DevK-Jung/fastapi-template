@@ -101,8 +101,8 @@ class SampleResponse(BaseModel):
             }
         }
     )
-    timestamp: datetime = Field(
-        default_factory=lambda: datetime.now(ZoneInfo("Asia/Seoul")),
-        description="응답 시간 (KST)",
-        json_schema_extra={"example": "2024-04-17T21:00:00+09:00"}
-    )
+    # timestamp: datetime = Field(
+    #     default_factory=lambda: datetime.now(ZoneInfo("Asia/Seoul")),
+    #     description="응답 시간 (KST)",
+    #     json_schema_extra={"example": "2024-04-17T21:00:00+09:00"}
+    # )

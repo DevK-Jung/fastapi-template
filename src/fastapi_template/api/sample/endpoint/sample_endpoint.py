@@ -22,7 +22,7 @@ def register_user(request: SampleRequest):
     return SampleResponse(
         message=f"{request.name}님 등록이 완료되었습니다.",
         data=request,
-        timestamp=datetime.now(ZoneInfo("Asia/Seoul"))
+        # timestamp=datetime.now(ZoneInfo("Asia/Seoul"))
     )
 
 
