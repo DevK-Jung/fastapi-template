@@ -1,4 +1,6 @@
+from datetime import datetime, timedelta
 from typing import Generic, Optional, TypeVar, Any
+from zoneinfo import ZoneInfo
 
 from pydantic import BaseModel, Field
 
@@ -33,11 +35,11 @@ class BizResponse(BaseModel, Generic[T]):
         json_schema_extra={"example": "b3d8e1f4-1234-5678-9abc-def012345678"}
     )
 
-    # timestamp: datetime = Field(
-    #     default_factory=lambda: datetime.now(ZoneInfo("Asia/Seoul")),
-    #     description="응답 시각",
-    #     json_schema_extra={"example": "2025-04-18T14:35:00+09:00"}
-    # )
+    timestamp: datetime = Field(
+        default_factory=lambda: datetime.now() + timedelta(hours=9),
+        description="응답 시각",
+        json_schema_extra={"example": "2025-04-18T14:35:00+09:00"}
+    )
 
     @classmethod
     def with_status(cls, status: int, message: str, request_id: str, data: Any = None, ) -> "BizResponse":
@@ -47,5 +49,5 @@ class BizResponse(BaseModel, Generic[T]):
             message=message,
             body=data,
             requestId=request_id,
-            # timestamp=datetime.now(ZoneInfo("Asia/Seoul"))
+            timestamp=datetime.now(ZoneInfo("Asia/Seoul"))
         )

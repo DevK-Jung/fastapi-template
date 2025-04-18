@@ -1,6 +1,7 @@
 import json
 
 from fastapi import Request
+from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse, StreamingResponse
 
 from fastapi_template.core.model.common_response import BizResponse
@@ -43,5 +44,5 @@ async def response_wrapper_middleware(request: Request, call_next):
 
     return JSONResponse(
         status_code=response.status_code,
-        content=wrapped.model_dump()
+        content=jsonable_encoder(wrapped)
     )
