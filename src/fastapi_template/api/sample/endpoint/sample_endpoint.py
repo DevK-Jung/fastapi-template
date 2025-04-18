@@ -1,7 +1,10 @@
 from datetime import datetime
+from typing import Optional
 from zoneinfo import ZoneInfo
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
+from fastapi.params import Depends
+from pydantic import BaseModel, Field, constr
 
 from fastapi_template.api.sample.model.sample_request import SampleRequest
 from fastapi_template.api.sample.model.sample_response import SampleResponse
@@ -22,3 +25,23 @@ def register_user(request: SampleRequest):
         data=request,
         timestamp=datetime.now(ZoneInfo("Asia/Seoul"))
     )
+
+
+@router.get("/exception")
+def exception():
+    raise Exception("에러 발생")
+
+
+@router.get("/http-exception")
+def http_exception():
+    raise HTTPException(400, "Bad Request")
+
+
+class ItemRequest(BaseModel):
+    name: constr(min_length=2)
+    age: Optional[int] = Field(None, title="나이", description="나이")
+
+
+@router.get("/request-validation-error")
+def http_exception(item: ItemRequest = Depends()):
+    return item
