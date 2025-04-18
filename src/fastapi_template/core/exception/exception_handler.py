@@ -1,6 +1,7 @@
 from fastapi import Request, HTTPException, FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from fastapi_template.core.exception.model.error_model import ErrorResponseModel
 
@@ -20,6 +21,22 @@ def register_exception_handlers(app: FastAPI):
         return JSONResponse(
             status_code=500,
             content=error_response.model_dump(),
+        )
+
+    # 라우트 외부 처리(경로 매핑이 안된 경우, HTTP Method가 잘못된 경우 등)
+    @app.exception_handler(StarletteHTTPException)
+    async def starlette_http_exception_handler(request: Request, exc: StarletteHTTPException):
+        error_response = ErrorResponseModel(
+            statusCode=exc.status_code,
+            resultCode="NOT_FOUND" if exc.status_code == 404 else "HTTP_EXCEPTION",
+            message=exc.detail,
+            path=str(request.url),
+            traceId=None
+        )
+
+        return JSONResponse(
+            status_code=exc.status_code,
+            content=error_response.model_dump()
         )
 
     # fastAPI HttpException 처리
