@@ -1,12 +1,11 @@
-from datetime import datetime
 from typing import Optional
-from zoneinfo import ZoneInfo
 
 from fastapi import APIRouter, HTTPException
 from fastapi.params import Depends
 from pydantic import BaseModel, Field, constr
 
 from fastapi_template.api.sample.model.sample_model import SampleRequest, SampleResponse
+from fastapi_template.core.model.common_response import BizResponse
 
 router = APIRouter(
     prefix="/api/v1/user",  # URL prefix
@@ -15,7 +14,7 @@ router = APIRouter(
 
 
 @router.post("/register"
-    , response_model=SampleResponse
+    , response_model=BizResponse[SampleResponse]
     , summary="Register a new user"
     , description="Register a new user with the provided name and email.")
 def register_user(request: SampleRequest):
