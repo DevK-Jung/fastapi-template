@@ -1,6 +1,4 @@
-from datetime import datetime
 from typing import Optional
-from zoneinfo import ZoneInfo
 
 from pydantic import BaseModel, Field, EmailStr, constr
 
@@ -101,8 +99,3 @@ class SampleResponse(BaseModel):
             }
         }
     )
-    # timestamp: datetime = Field(
-    #     default_factory=lambda: datetime.now(ZoneInfo("Asia/Seoul")),
-    #     description="응답 시간 (KST)",
-    #     json_schema_extra={"example": "2024-04-17T21:00:00+09:00"}
-    # )

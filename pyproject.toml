@@ -12,8 +12,15 @@ dependencies = [
     "uvicorn (>=0.34.1,<0.35.0)",
     "pydantic[email] (>=2.11.3,<3.0.0)",
     "email-validator (>=2.2.0,<3.0.0)",
-    "tzdata (>=2025.2,<2026.0)"
+    "tzdata (>=2025.2,<2026.0)",
+    "pydantic-settings (>=2.9.0,<3.0.0)",
+    "env (>=0.1.0,<0.2.0)"
 ]
+
+[tool.poetry.scripts]
+    start-local = "scripts.run_local:main"
+    start-dev = "scripts.run_dev:main"
+    start-prod = "scripts.run_prod:main"
 
 [tool.poetry]
 packages = [{include = "fastapi_template", from = "src"}]
