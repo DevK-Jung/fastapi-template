@@ -6,8 +6,7 @@ from fastapi import APIRouter, HTTPException
 from fastapi.params import Depends
 from pydantic import BaseModel, Field, constr
 
-from fastapi_template.api.sample.model.sample_request import SampleRequest
-from fastapi_template.api.sample.model.sample_response import SampleResponse
+from fastapi_template.api.sample.model.sample_model import SampleRequest, SampleResponse
 
 router = APIRouter(
     prefix="/api/v1/user",  # URL prefix
