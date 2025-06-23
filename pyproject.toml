@@ -8,11 +8,15 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "fastapi (>=0.115.13,<0.116.0)"
 ]
 
 [tool.poetry]
 packages = [{ include = "fastapi_ai", from = "src" }]
 
+
+[tool.poetry.group.dev.dependencies]
+uvicorn = {extras = ["standard"], version = "^0.34.3"}
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
