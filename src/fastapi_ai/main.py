@@ -10,6 +10,10 @@ app = FastAPI(
         "name": "김정현",
         "email": "dev.kjung@gmail.com"
     },
+    license_info={
+        "name": "Apache 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
+    },
 )
 
 for router in v1_routers:
