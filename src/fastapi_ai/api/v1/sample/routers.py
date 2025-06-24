@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, time
 from typing import List, Annotated, Any
 from uuid import UUID
 
-from fastapi import APIRouter, Query, Path, Body, Cookie, Header, File, Form, UploadFile
+from fastapi import APIRouter, Query, Path, Body, Cookie, Header, File, Form, UploadFile, HTTPException
 
 from fastapi_ai.api.v1.sample.schemas import FilterParams, Sample, SampleJsonExample2, SampleJsonExample1, \
     SampleUserOut, SampleUserIn, Item, FormData
@@ -271,5 +271,18 @@ async def create_upload_file(file: UploadFile):
     file-like object를 필요로하는 다른 라이브러리에 직접적으로 전달할 수 있는 파이썬 SpooledTemporaryFile 객체를 반환합니다.
     """
     return {"filename": file.filename}
+
+
+##############################################################################
+
+############################ Exception #######################################
+
+@router.get("/default-http-exception")
+async def http_exception():
+    raise HTTPException(
+        status_code=404,
+        detail="Item not found",
+        headers={"X-Error": "There goes my error"},
+    )
 
 ##############################################################################
