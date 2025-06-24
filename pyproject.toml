@@ -9,7 +9,8 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi (>=0.115.13,<0.116.0)",
-    "pydantic[email] (>=2.11.7,<3.0.0)"
+    "pydantic[email] (>=2.11.7,<3.0.0)",
+    "python-multipart (>=0.0.20,<0.0.21)"
 ]
 
 [tool.poetry]

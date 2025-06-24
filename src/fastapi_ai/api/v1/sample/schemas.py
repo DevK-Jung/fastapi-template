@@ -66,3 +66,7 @@ class Item(BaseModel):
     description: Union[str, None] = None
     price: float
     tax: float = 10.5
+
+class FormData(BaseModel):
+    username: str
+    password: str

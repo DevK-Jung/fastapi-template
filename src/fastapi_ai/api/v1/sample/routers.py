@@ -2,10 +2,10 @@ from datetime import datetime, timedelta, time
 from typing import List, Annotated, Any
 from uuid import UUID
 
-from fastapi import APIRouter, Query, Path, Body, Cookie, Header
+from fastapi import APIRouter, Query, Path, Body, Cookie, Header, File, Form, UploadFile
 
 from fastapi_ai.api.v1.sample.schemas import FilterParams, Sample, SampleJsonExample2, SampleJsonExample1, \
-    SampleUserOut, SampleUserIn, Item
+    SampleUserOut, SampleUserIn, Item, FormData
 
 router = APIRouter(prefix="/samples", tags=["Samples"])
 
@@ -234,4 +234,42 @@ async def read_item_name(item_id: str):
 async def read_item_public_data(item_id: str):
     return items[item_id]
 
+
 ################################################################################
+
+############################ Form ############################################
+
+@router.post("/form-basic")
+async def form_basic(username: Annotated[str, Form()], password: Annotated[str, Form()]):
+    return {"username": username, "password": password}
+
+
+@router.post("/form-model")
+async def form_model(data: Annotated[FormData, Form()]):
+    return data
+
+
+##############################################################################
+
+############################ File ############################################
+
+@router.post("/files/")
+async def create_file(file: bytes = File()):
+    return {"file_size": len(file)}
+
+
+@router.post("/uploadfile/")
+async def create_upload_file(file: UploadFile):
+    """
+    UploadFile 을 사용하는 것은 bytes 과 비교해 다음과 같은 장점이 있습니다:
+
+    "스풀 파일"을 사용합니다.
+    최대 크기 제한까지만 메모리에 저장되며, 이를 초과하는 경우 디스크에 저장됩니다.
+    따라서 이미지, 동영상, 큰 이진코드와 같은 대용량 파일들을 많은 메모리를 소모하지 않고 처리하기에 적합합니다.
+    업로드 된 파일의 메타데이터를 얻을 수 있습니다.
+    파일과 같은 async 인터페이스를 갖고 있습니다.
+    file-like object를 필요로하는 다른 라이브러리에 직접적으로 전달할 수 있는 파이썬 SpooledTemporaryFile 객체를 반환합니다.
+    """
+    return {"filename": file.filename}
+
+##############################################################################
