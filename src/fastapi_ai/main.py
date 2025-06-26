@@ -1,6 +1,8 @@
+import uvicorn
 from fastapi import FastAPI
 
 from fastapi_ai.api.v1 import routers as v1_routers
+from fastapi_ai.core.exception.global_exception_handler import register_global_exception_handlers
 
 app = FastAPI(
     title="FastAPI AI API",
@@ -16,5 +18,14 @@ app = FastAPI(
     },
 )
 
+register_global_exception_handlers(app)
+
 for router in v1_routers:
     app.include_router(router, prefix="/api/v1")
+
+if __name__ == "__main__":
+    uvicorn.run(
+        app,
+        host="0.0.0.0",
+        port=8000,
+    )
