@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.responses import JSONResponse
@@ -25,7 +25,8 @@ def register_global_exception_handlers(app: FastAPI):
             path=str(request.url.path),
             trace=str(exc.detail)
         )
-        return JSONResponse(status_code=exc.status_code, content=err.model_dump())
+        return JSONResponse(status_code=exc.status_code,
+                            content=err.model_dump())
 
     @app.exception_handler(RequestValidationError)
     async def validation_exception_handler(request: Request, exc: RequestValidationError):
@@ -38,7 +39,8 @@ def register_global_exception_handlers(app: FastAPI):
             path=str(request.url.path),
             trace=str(exc.errors())
         )
-        return JSONResponse(status_code=422, content=err.model_dump())
+        return JSONResponse(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                            content=err.model_dump())
 
     # Generic 예외 처리
     @app.exception_handler(Exception)
@@ -46,7 +48,8 @@ def register_global_exception_handlers(app: FastAPI):
         """
         모든 예외(Exception)를 처리하는 기본 핸들러
         """
-        
+
         err = ErrorResponse.create_error_response(exc, request)
 
-        return JSONResponse(status_code=500, content=err.model_dump())
+        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            content=err.model_dump())

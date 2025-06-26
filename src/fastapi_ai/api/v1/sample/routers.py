@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, time
 from typing import List, Annotated, Any
 from uuid import UUID
 
-from fastapi import APIRouter, Query, Path, Body, Cookie, Header, File, Form, UploadFile, HTTPException
+from fastapi import APIRouter, Query, Path, Body, Cookie, Header, File, Form, UploadFile, HTTPException, status
 
 from fastapi_ai.api.v1.sample.schemas import FilterParams, Sample, SampleJsonExample2, SampleJsonExample1, \
     SampleUserOut, SampleUserIn, Item, FormData
@@ -75,7 +75,7 @@ async def path_parm(
 ####################
 
 ### body ###
-@router.post("/body", status_code=201)
+@router.post("/body", status_code=status.HTTP_201_CREATED)
 async def body(
         sample: Sample,
         importance: int = Body()  # 중첩 파라미터
@@ -83,7 +83,7 @@ async def body(
     return {"sample": sample, "importance": importance}
 
 
-@router.post("/body-flat", status_code=201)
+@router.post("/body-flat", status_code=status.HTTP_201_CREATED)
 async def body_flat(
         sample: Sample = Body(),
 ):
