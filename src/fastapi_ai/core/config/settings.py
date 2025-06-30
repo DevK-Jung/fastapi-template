@@ -44,6 +44,8 @@ class Settings(BaseSettings):
     host: str = Field(default="0.0.0.0", alias="HOST")
     port: int = Field(default=8000, alias="PORT")
 
+    reload: bool = Field(default=False, alias="RELOAD")
+
     # Database and Redis (required)
     db_url: str = Field(..., alias="DB_URL", description="Database connection URL")
     redis_url: str = Field(..., alias="REDIS_URL", description="Redis connection URL")

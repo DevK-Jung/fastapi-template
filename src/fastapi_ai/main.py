@@ -36,4 +36,4 @@ if __name__ == "__main__":
     uvicorn.run("fastapi_ai.main:app",
                 host=settings.host,
                 port=settings.port,
-                reload=True)
+                reload=settings.reload)
