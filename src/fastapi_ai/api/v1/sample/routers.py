@@ -285,4 +285,35 @@ async def http_exception():
         headers={"X-Error": "There goes my error"},
     )
 
+
+##############################################################################
+
+############################ Docs #######################################
+
+@router.post("/docs-items/",
+             response_model=Item,
+             summary="Create an item",
+             response_description="The created item",
+             )
+async def create_item(item: Item):
+    """
+    Create an item with all the information:
+
+    - **name**: each item must have a name
+    - **description**: a long description
+    - **price**: required
+    - **tax**: if the item doesn't have tax, you can omit this
+    - **tags**: a set of unique tag strings for this item
+    """
+    return item
+
+@router.post("/docs-deprecated/",
+             response_model=Item,
+             summary="Create an item",
+             response_description="The created item",
+             deprecated=True
+             )
+async def docs_deprecated(item: Item):
+    return item
+
 ##############################################################################
