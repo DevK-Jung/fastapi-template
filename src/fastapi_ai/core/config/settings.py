@@ -1,6 +1,7 @@
 import logging
 import os
 from functools import lru_cache
+from pathlib import Path
 from typing import List, Optional
 
 from dotenv import load_dotenv
@@ -10,15 +11,27 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 # Setup logging for configuration debugging
 logger = logging.getLogger(__name__)
 
-# Get current environment
+# 1. APP_ENV 환경 변수 가져오기 (시스템 환경 변수 또는 기본값)
 CURRENT_ENV = os.getenv("APP_ENV", "local")
 
-# Load environment file based on current environment
-env_file_path = f".env.{CURRENT_ENV}"
-load_dotenv(dotenv_path=env_file_path)
+ROOT_DIR = Path(__file__).resolve().parents[4]
 
-logger.info(f"Loading configuration for environment: {CURRENT_ENV}")
-logger.info(f"Environment file: {env_file_path}")
+# 2. 환경별 .env 파일 경로 설정
+env_file_path = ROOT_DIR / f".env.{CURRENT_ENV}"
+
+print(env_file_path)
+
+load_dotenv(dotenv_path=env_file_path, override=False)
+
+# 3. 환경별 .env 파일이 존재하는지 확인하고 로드
+if Path(env_file_path).exists():
+    load_dotenv(dotenv_path=env_file_path, override=True)
+    logger.info(f"Loading configuration for environment: {CURRENT_ENV}")
+    logger.info(f"Environment file loaded: {env_file_path}")
+else:
+    logger.error(f"Environment file not found: {env_file_path}")
+    logger.error(f"Please create {env_file_path} file with required configuration")
+    raise FileNotFoundError(f"Required environment file {env_file_path} not found")
 
 
 class Settings(BaseSettings):
@@ -67,7 +80,7 @@ class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(
         extra="ignore",
-        env_file=env_file_path,
+        env_file=str(env_file_path),
         env_file_encoding="utf-8",
         case_sensitive=False,
         validate_assignment=True
@@ -91,6 +104,14 @@ class Settings(BaseSettings):
         return v
 
     @classmethod
+    @field_validator('allowed_methods', 'allowed_headers', mode='before')
+    def parse_allowed_list(cls, v) -> List[str]:
+        """Parse allowed methods/headers from string or list."""
+        if isinstance(v, str):
+            return [item.strip() for item in v.split(',')]
+        return v
+
+    @classmethod
     @field_validator('port')
     def validate_port(cls, v: int) -> int:
         """Validate port is in valid range."""
@@ -99,16 +120,19 @@ class Settings(BaseSettings):
         return v
 
     @computed_field
+    @property
     def is_development(self) -> bool:
         """Check if we're in development environment."""
         return self.app_env in ['local', 'dev', 'development']
 
     @computed_field
+    @property
     def is_production(self) -> bool:
         """Check if we're in production environment."""
         return self.app_env in ['prod', 'production']
 
     @computed_field
+    @property
     def server_url(self) -> str:
         """Get the full server URL."""
         protocol = "https" if self.is_production else "http"
@@ -116,13 +140,19 @@ class Settings(BaseSettings):
 
     def configure_logging(self):
         """Configure application logging based on settings."""
+        # logs 디렉토리 생성
+        if not self.is_development:
+            Path("logs").mkdir(exist_ok=True)
+
+        handlers = [logging.StreamHandler()]
+        if not self.is_development:
+            handlers.append(logging.FileHandler(f'logs/{self.app_env}.log'))
+
         logging.basicConfig(
             level=getattr(logging, self.log_level),
             format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-            handlers=[
-                logging.StreamHandler(),
-                logging.FileHandler(f'logs/{self.app_env}.log') if not self.is_development else logging.NullHandler()
-            ]
+            handlers=handlers,
+            force=True  # 기존 핸들러를 덮어씀
         )
 
 
@@ -188,6 +218,31 @@ def get_cors_config():
     }
 
 
+# 디버깅을 위한 환경 파일 체크 함수
+def check_env_files():
+    """Check which environment files exist."""
+    possible_envs = ["local", "dev", "development", "staging", "prod", "production"]
+    env_files = [f".env.{env}" for env in possible_envs]
+
+    print(f"\n{'=' * 40}")
+    print("Environment Files Check")
+    print(f"{'=' * 40}")
+    print(f"Current working directory: {Path.cwd()}")
+    print(f"Current environment: {CURRENT_ENV}")
+    print(f"Expected file: .env.{CURRENT_ENV}")
+    print()
+
+    for env_file in env_files:
+        path = Path(env_file)
+        exists = "O" if path.exists() else "X"
+        current = " (current)" if env_file == f".env.{CURRENT_ENV}" else ""
+        print(f"{exists} {env_file}{current} {'(exists)' if path.exists() else '(not found)'}")
+        if path.exists():
+            print(f"   Path: {path.absolute()}")
+
+    print(f"{'=' * 40}\n")
+
+
 # For debugging - use sparingly in production
 def print_config_summary():
     """Print configuration summary (excluding sensitive data)."""
@@ -205,4 +260,29 @@ def print_config_summary():
     print(f"Database Pool Size: {settings.db_pool_size}")
     print(f"Redis Pool Size: {settings.redis_pool_size}")
     print(f"Rate Limit: {settings.rate_limit_per_minute}/min")
+    print(f"{'=' * 50}\n")
+
+
+# 환경 변수 디버깅 함수
+def debug_environment():
+    """Debug environment variables and files."""
+    print(f"\n{'=' * 50}")
+    print("Environment Debug Information")
+    print(f"{'=' * 50}")
+
+    # 환경 파일 체크
+    check_env_files()
+
+    # 주요 환경 변수 체크
+    env_vars = ["APP_ENV", "DB_URL", "REDIS_URL", "SECRET_KEY"]
+    print("Environment Variables:")
+    for var in env_vars:
+        value = os.getenv(var)
+        if var == "SECRET_KEY" and value:
+            print(f"  {var}: {'*' * len(value)} (hidden)")
+        elif value:
+            print(f"  {var}: {value}")
+        else:
+            print(f"  {var}: NOT SET")
+
     print(f"{'=' * 50}\n")
