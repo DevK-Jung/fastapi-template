@@ -4,7 +4,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Query, Path, Body, Cookie, Header, File, Form, UploadFile, HTTPException, status
 
-from fastapi_ai.api.v1.sample.schemas import FilterParams, Sample, SampleJsonExample2, SampleJsonExample1, \
+from fastapi_ai.domains.sample.schemas import FilterParams, Sample, SampleJsonExample2, SampleJsonExample1, \
     SampleUserOut, SampleUserIn, Item, FormData
 
 router = APIRouter(prefix="/samples", tags=["Samples"])
