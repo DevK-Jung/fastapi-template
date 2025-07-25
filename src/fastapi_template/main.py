@@ -2,6 +2,7 @@ import uvicorn
 from fastapi import FastAPI
 
 from fastapi_template.api.v1 import routers as v1_routers
+from fastapi_template.core.config.lifespan import lifespan
 from fastapi_template.core.config.settings import get_settings
 from fastapi_template.core.exception.global_exception_handler import register_global_exception_handlers
 
@@ -19,6 +20,7 @@ app = FastAPI(
         "name": "Apache 2.0",
         "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
     },
+    lifespan=lifespan
 )
 
 register_global_exception_handlers(app)

@@ -46,9 +46,17 @@ class Settings(BaseSettings):
 
     reload: bool = Field(default=False, alias="RELOAD")
 
-    # Database and Redis (required)
-    db_url: str = Field(..., alias="DB_URL", description="Database connection URL")
-    db_echo: str = Field(..., alias="DB_ECHO", description="Database connection URL")
+    # Database
+    db_type: str = Field(..., alias="DB_TYPE")
+    db_echo: bool = Field(..., alias="DB_ECHO")
+    db_name: str = Field(..., alias="DB_NAME")
+    db_username: str = Field(..., alias="DB_USERNAME")
+    db_password: str = Field(..., alias="DB_PASSWORD")
+    db_host: str = Field(..., alias="DB_HOST")
+    db_port: int = Field(..., alias="DB_PORT")
+    db_pool_size: int = Field(default=20, alias="DB_POOL_SIZE")
+    db_max_overflow: int = Field(default=30, alias="DB_MAX_OVERFLOW")
+
     redis_url: str = Field(..., alias="REDIS_URL", description="Redis connection URL")
 
     # Security
@@ -69,10 +77,6 @@ class Settings(BaseSettings):
 
     # Rate limiting
     rate_limit_per_minute: int = Field(default=60, alias="RATE_LIMIT_PER_MINUTE")
-
-    # Database connection pool settings
-    db_pool_size: int = Field(default=20, alias="DB_POOL_SIZE")
-    db_max_overflow: int = Field(default=30, alias="DB_MAX_OVERFLOW")
 
     # Redis connection pool settings
     redis_pool_size: int = Field(default=10, alias="REDIS_POOL_SIZE")
@@ -141,6 +145,12 @@ class Settings(BaseSettings):
         protocol = "https" if self.is_production else "http"
         return f"{protocol}://{self.host}:{self.port}"
 
+    @computed_field
+    @property
+    def database_url(self) -> str:
+        """데이터베이스 URL 생성"""
+        return f"{self.db_type}://{self.db_username}:{self.db_password}@{self.db_host}:{self.db_port}/{self.db_name}"
+
     def configure_logging(self):
         """Configure application logging based on settings."""
         # logs 디렉토리 생성
@@ -188,16 +198,16 @@ def validate_configuration():
         return False
 
 
-# Environment-specific configuration helpers
-def get_database_config():
-    """Get database-specific configuration."""
-    settings = get_settings()
-    return {
-        'url': settings.db_url,
-        'pool_size': settings.db_pool_size,
-        'max_overflow': settings.db_max_overflow,
-        'echo': settings.debug,  # Echo SQL queries in debug mode
-    }
+# # Environment-specific configuration helpers
+# def get_database_config():
+#     """Get database-specific configuration."""
+#     settings = get_settings()
+#     return {
+#         'url': settings.db_url,
+#         'pool_size': settings.db_pool_size,
+#         'max_overflow': settings.db_max_overflow,
+#         'echo': settings.debug,  # Echo SQL queries in debug mode
+#     }
 
 
 def get_redis_config():
