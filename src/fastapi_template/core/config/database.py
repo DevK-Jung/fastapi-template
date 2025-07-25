@@ -2,7 +2,7 @@ from typing import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 
-from fastapi_ai.core.config.settings import get_settings
+from fastapi_template.core.config.settings import get_settings
 
 settings = get_settings()
 

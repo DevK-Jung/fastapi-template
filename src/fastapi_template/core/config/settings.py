@@ -39,7 +39,7 @@ class Settings(BaseSettings):
 
     # Application settings
     app_env: str = Field(default=CURRENT_ENV, alias="APP_ENV")
-    app_name: str = Field(default="FastAPI-AI", alias="APP_NAME")
+    app_name: str = Field(default="FastAPI-Template", alias="APP_NAME")
     debug: bool = Field(default=False, alias="DEBUG")
     host: str = Field(default="0.0.0.0", alias="HOST")
     port: int = Field(default=8000, alias="PORT")
