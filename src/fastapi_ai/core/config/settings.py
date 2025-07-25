@@ -48,6 +48,7 @@ class Settings(BaseSettings):
 
     # Database and Redis (required)
     db_url: str = Field(..., alias="DB_URL", description="Database connection URL")
+    db_echo: str = Field(..., alias="DB_ECHO", description="Database connection URL")
     redis_url: str = Field(..., alias="REDIS_URL", description="Redis connection URL")
 
     # Security
